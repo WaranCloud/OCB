@@ -37,7 +37,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-04-07 20:36+0000\n"
+"POT-Creation-Date: 2025-05-30 18:36+0000\n"
 "PO-Revision-Date: 2024-09-25 09:41+0000\n"
 "Last-Translator: Baskhuu Lodoikhuu <baskhuujacara@gmail.com>, 2025\n"
 "Language-Team: Mongolian (https://app.transifex.com/odoo/teams/41243/mn/)\n"
@@ -234,6 +234,15 @@ msgstr ""
 #. odoo-python
 #: code:addons/account/models/account_account_tag.py:0
 msgid "%(tag)s (%(country_code)s)"
+msgstr ""
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/account_tax.py:0
+msgid ""
+"%(tax_account)s (%(account_name)s) should be an account of type "
+"\"%(receivable)s\" or \"%(payable)s\" with both options "
+"\"%(allow_reconciliation)s\" and \"%(non_trade)s\" enabled."
 msgstr ""
 
 #. module: account
@@ -1370,6 +1379,11 @@ msgstr ""
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
+msgid "<strong class=\"d-block mt-3\">Shipping Address</strong>"
+msgstr ""
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong class=\"mr16\">Subtotal</strong>"
 msgstr "<strong class=\"mr16\">Дэд дүн</strong>"
 
@@ -1435,11 +1449,6 @@ msgstr "<strong>Лавлах</strong>"
 
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.report_invoice_document
-msgid "<strong>Shipping Address</strong>"
-msgstr "<strong>Хүргэлтийн хаяг</strong>"
-
-#. module: account
-#: model_terms:ir.ui.view,arch_db:account.report_invoice_document
 msgid "<strong>Source</strong>"
 msgstr "<strong>Эх</strong>"
 
@@ -1473,6 +1482,13 @@ msgstr "<strong>Нийт</strong>"
 #: model_terms:ir.ui.view,arch_db:account.view_account_account_kanban
 msgid "<strong>Type: </strong>"
 msgstr "<strong>Төрөл: </strong>"
+
+#. module: account
+#: model_terms:ir.ui.view,arch_db:account.res_config_settings_view_form
+msgid ""
+"<strong>Warning:</strong> Once the Audit Trail is enabled, it cannot be "
+"disabled again if there are any existing journal items."
+msgstr ""
 
 #. module: account
 #. odoo-python
@@ -1509,6 +1525,14 @@ msgstr ""
 #: code:addons/account/models/res_partner_bank.py:0
 msgid "A bank account can belong to only one journal."
 msgstr "Банкны данс зөвхөн нэг л журналд холбогдсон байх ёстой."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/res_partner_bank.py:0
+msgid ""
+"A bank account with Account Number %(number)s already exists for Partner "
+"%(partner)s, but is archived. Please unarchive it instead."
+msgstr ""
 
 #. module: account
 #: model_terms:ir.actions.act_window,help:account.action_bank_statement_tree
@@ -3494,8 +3518,8 @@ msgstr "Банкны данс"
 #. module: account
 #. odoo-python
 #: code:addons/account/models/res_partner_bank.py:0
-msgid "Bank Account %(link)s with number %(number)s deleted"
-msgstr "Банкны данс %(link)s бүхий  %(number)s дугаар устгагдсан"
+msgid "Bank Account %(link)s with number %(number)s archived"
+msgstr ""
 
 #. module: account
 #. odoo-python
@@ -4099,6 +4123,12 @@ msgstr ""
 "мэдээллийг авах боломжгүй."
 
 #. module: account
+#. odoo-python
+#: code:addons/account/models/account_move_send.py:0
+msgid "Cannot identify the invoices in the generated PDF: %s"
+msgstr ""
+
+#. module: account
 #: model:account.account,name:account.1_capital
 msgid "Capital"
 msgstr ""
@@ -4273,7 +4303,7 @@ msgstr "Касс: Үлдэгдэл"
 #. module: account
 #: model_terms:ir.ui.view,arch_db:account.view_move_form
 msgid "Catalog"
-msgstr ""
+msgstr "Катлог"
 
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_analytic_line__category
@@ -11562,7 +11592,7 @@ msgstr "Гарч буй төлбөр"
 #. module: account
 #: model:ir.model.fields,field_description:account.field_account_payment__outstanding_account_id
 msgid "Outstanding Account"
-msgstr ""
+msgstr "Хүлээлгийн түр данс"
 
 #. module: account
 #. odoo-python
@@ -15375,6 +15405,13 @@ msgstr ""
 "байна."
 
 #. module: account
+#. odoo-python
+#: code:addons/account/models/partner.py:0
+msgid ""
+"The commercial partner has been updated for all related accounting entries."
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields,help:account.field_account_tax_repartition_line__company_id
 msgid "The company this distribution line belongs to."
 msgstr ""
@@ -17995,6 +18032,11 @@ msgid "Wrong credit or debit value in accounting entry!"
 msgstr ""
 
 #. module: account
+#: model_terms:ir.ui.view,arch_db:account.view_partner_property_form
+msgid "XML format"
+msgstr ""
+
+#. module: account
 #: model:ir.model.fields.selection,name:account.selection__account_move__auto_post__yearly
 msgid "Yearly"
 msgstr "Жил бүр"
@@ -18651,6 +18693,14 @@ msgstr ""
 
 #. module: account
 #. odoo-python
+#: code:addons/account/models/partner.py:0
+msgid ""
+"You cannot set a partner as an invoicing address of another if they have a "
+"different %(vat_label)s."
+msgstr ""
+
+#. module: account
+#. odoo-python
 #: code:addons/account/models/account_account.py:0
 msgid ""
 "You cannot switch an account to prevent the reconciliation if some partial "
@@ -18733,6 +18783,14 @@ msgid ""
 msgstr ""
 "Та нэхэмжлэлийг хасах утгатайгаар батлах боломжгүй. Үүний оронд буцаалтын "
 "нэхэмжлэл үүсгэх боломжгүй. Үйлдэл цэснээр буцаалт үүсгэх цэсийг сонгоно уу."
+
+#. module: account
+#. odoo-python
+#: code:addons/account/models/partner.py:0
+msgid ""
+"You do not have permission to mark this partner as the main commercial "
+"partner."
+msgstr ""
 
 #. module: account
 #. odoo-python

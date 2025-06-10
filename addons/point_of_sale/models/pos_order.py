@@ -104,7 +104,9 @@ class PosOrder(models.Model):
             # when vals change the state to 'paid'
             for field in ['lines', 'payment_ids']:
                 if order.get(field):
-                    pos_order.write({field: order.get(field)})
+                    existing_record_ids = self.env[pos_order[field]._name].browse([r[1] for r in order[field] if r[1] != 0]).exists().ids
+                    existing_records_vals = [r for r in order[field] if r[0] not in [1, 2, 3, 4] or r[1] in existing_record_ids]
+                    pos_order.write({field: existing_records_vals})
                     order[field] = []
 
             del order['uuid']
@@ -495,6 +497,9 @@ class PosOrder(models.Model):
                         country=order.partner_id.country_id or self.env.company.country_id)
             if vals.get('has_deleted_line') is not None and self.has_deleted_line:
                 del vals['has_deleted_line']
+            allowed_vals = ['paid', 'done', 'invoiced']
+            if vals.get('state') and vals['state'] not in allowed_vals and order.state in allowed_vals:
+                raise UserError(_('This order has already been paid. You cannot set it back to draft or edit it.'))
 
         list_line = self._create_pm_change_log(vals)
         res = super().write(vals)
@@ -1581,6 +1586,8 @@ class PosOrderLine(models.Model):
             product = line.product_id
             if line._is_product_storable_fifo_avco() and stock_moves:
                 product_cost = product._compute_average_price(0, line.qty, line._get_stock_moves_to_consider(stock_moves, product))
+                if (product.cost_currency_id.is_zero(product_cost) and self.order_id.shipping_date and self.refunded_orderline_id):
+                    product_cost = self.refunded_orderline_id.total_cost / self.refunded_orderline_id.qty
             else:
                 product_cost = product.standard_price
             line.total_cost = line.qty * product.cost_currency_id._convert(
