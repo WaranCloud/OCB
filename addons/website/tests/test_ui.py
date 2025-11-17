@@ -11,6 +11,7 @@ from odoo import http
 from odoo.addons.base.tests.common import HttpCaseWithUserDemo
 from odoo.addons.web_editor.controllers.main import Web_Editor
 from odoo.fields import Command
+from odoo.tools import mute_logger
 
 
 @odoo.tests.tagged('-at_install', 'post_install')
@@ -764,3 +765,10 @@ class TestUi(odoo.tests.HttpCase):
 
     def test_header_color_and_undo_redo_issue(self):
         self.start_tour("/", "undo_redo_header_oriented_issue", login="admin")
+
+    def test_website_edit_megamenu_visibility(self):
+        self.start_tour("/", 'edit_megamenu_visibility', login='admin')
+
+    @mute_logger("odoo.http")
+    def test_website_replace_remove_image(self):
+        self.start_tour("/", "website_replace_remove_image", login="admin")
