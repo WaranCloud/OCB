@@ -343,6 +343,67 @@ class TestPoSSale(TestPointOfSaleHttpCommon):
         self.main_pos_config.open_ui()
         self.start_pos_tour('PosSettleOrderNotGroupable', login="accountman")
 
+    def test_import_lot_groupable_and_non_groupable(self):
+        """
+        Test importing a Sale Order in POS containing both groupable and non-groupable
+        lot-tracked products, each with quantities exceeding available lots.
+        Ensures the POS correctly handles lot selection and grouping behavior.
+        """
+        uom_category = self.env['uom.category'].create({
+            'name': 'Non groupable',
+            'is_pos_groupable': False,
+        })
+        non_groupable_uom = self.env['uom.uom'].create({
+            'name': 'Non groupable',
+            'category_id': uom_category.id,
+            'uom_type': 'reference',
+            'rounding': 0.01
+        })
+        groupable_product, non_groupable_product = self.env['product.product'].create([{
+            'name': name,
+            'available_in_pos': True,
+            'is_storable': True,
+            'lst_price': 10.0,
+            'tracking': 'lot',
+            'taxes_id': False,
+        } for name in ('Groupable Product', 'Non Groupable Product')])
+        non_groupable_product.uom_id = non_groupable_uom.id
+
+        warehouse = self.env['stock.warehouse'].search([('company_id', '=', self.env.company.id)], limit=1)
+        stock_location = warehouse.lot_stock_id
+        non_groupable_lot, groupable_lot = self.env['stock.lot'].create([{
+            'name': f'LOT {product.name}',
+            'product_id': product.id,
+            'company_id': self.env.company.id,
+        } for product in (non_groupable_product, groupable_product)])
+        self.env['stock.quant'].with_context(inventory_mode=True).create([{
+            'product_id': lot.product_id.id,
+            'inventory_quantity': 2,
+            'location_id': stock_location.id,
+            'lot_id': lot.id,
+        } for lot in (non_groupable_lot, groupable_lot)]).action_apply_inventory()
+
+        sale_order = self.env['sale.order'].sudo().create({
+            'partner_id': self.env['res.partner'].create({'name': 'Test Partner'}).id,
+            'order_line': [
+                Command.create({
+                    'product_id': non_groupable_product.id,
+                    'name': non_groupable_product.name,
+                    'product_uom_qty': 3,
+                }),
+                Command.create({
+                    'product_id': groupable_product.id,
+                    'name': groupable_product.name,
+                    'product_uom_qty': 3,
+                }),
+            ],
+        })
+        sale_order.action_confirm()
+        self.assertEqual(sale_order.amount_total, 60)
+
+        self.main_pos_config.open_ui()
+        self.start_tour("/pos/ui?config_id=%d" % self.main_pos_config.id, 'test_import_lot_groupable_and_non_groupable', login="accountman")
+
     def test_customer_notes(self):
         """This test create an order and settle it in the PoS. It also uses multistep delivery
             and we need to make sure that all the picking are cancelled if the order is fully delivered.
@@ -671,6 +732,36 @@ class TestPoSSale(TestPointOfSaleHttpCommon):
         for order_line in sale_order.order_line.filtered(lambda l: l.product_id == self.downpayment_product):
             order_line = order_line.with_context(lang=partner_test.lang)
             self.assertIn(format_date(order_line.env, order_line.order_id.date_order), order_line.name)
+
+    def test_settle_so_with_non_pos_groupable_uom(self):
+        """
+        For products with a non-groupable PoS UoM (e.g., Kg), ensure that when a SO
+        uses another UoM (e.g., g), the PoS correctly displays the quantity converted
+        back to the original UoM.
+        """
+        self.component_kg = self.env['product.product'].create({
+            'name': 'Pomme de Terre',
+            'is_storable': True,
+            'available_in_pos': True,
+            'taxes_id': False,
+            'lst_price': 10.0,
+            'uom_id': self.env.ref('uom.product_uom_kgm').id,
+            'uom_po_id': self.env.ref('uom.product_uom_kgm').id,
+        })
+
+        sale_order = self.env['sale.order'].create({
+            'partner_id': self.env['res.partner'].create({'name': 'Test Partner'}).id,
+            'order_line': [(0, 0, {
+                'product_id': self.component_kg.id,
+                'name': self.component_kg.name,
+                'product_uom_qty': 500,
+                'product_uom': self.env.ref('uom.product_uom_gram').id,
+                'price_unit': 0.01,
+            })],
+        })
+        sale_order.action_confirm()
+
+        self.start_pos_tour('test_settle_so_with_non_pos_groupable_uom')
 
     def test_settle_so_with_pos_downpayment(self):
         so = self.env['sale.order'].create({

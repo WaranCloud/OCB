@@ -12,6 +12,7 @@ import {
 import { fillEmpty, unwrapContents } from "@html_editor/utils/dom";
 import {
     isEmptyBlock,
+    isEmptyTextNode,
     isRedundantElement,
     isTextNode,
     isWhitespace,
@@ -25,6 +26,7 @@ import { _t } from "@web/core/l10n/translation";
 import { withSequence } from "@html_editor/utils/resource";
 import { isBlock } from "@html_editor/utils/blocks";
 import { callbacksForCursorUpdate } from "@html_editor/utils/selection";
+import { nodeSize } from "@html_editor/utils/position";
 
 const RGBA_OPACITY = 0.6;
 const HEX_OPACITY = "99";
@@ -335,6 +337,24 @@ export class ColorPlugin extends Plugin {
                             selectedChildren,
                             splitnode
                         );
+                        cursors.setAnchorOffset(
+                            Math.min(nodeSize(cursors.anchor.node), cursors.anchor.offset)
+                        );
+                        cursors.setFocusOffset(
+                            Math.min(nodeSize(cursors.focus.node), cursors.focus.offset)
+                        );
+                        // After splitting we need to clear the new nodes created by
+                        // `splitElement` that contains only empty text nodes.
+                        // We also need to update the outer cursor.
+                        for (const child of font.parentElement.children) {
+                            if (
+                                child.childNodes.length &&
+                                [...child.childNodes].every((node) => isEmptyTextNode(node))
+                            ) {
+                                cursors.update(callbacksForCursorUpdate.remove(child));
+                                child.remove();
+                            }
+                        }
                         if (isGradientBeingUpdated) {
                             const classRegex =
                                 mode === "color" ? TEXT_CLASSES_REGEX : BG_CLASSES_REGEX;
