@@ -233,6 +233,21 @@ export class SelectionPlugin extends Plugin {
             }
         });
         this.preservedCursors = [];
+        // Calling the native `focus` method of the editable element, even with
+        // `preventScroll: true`, would reset the selection at the start of the
+        // editable. This would, in turn, trigger a selectionchange event and,
+        // down the line, a scroll to the position of the selection, so to the
+        // top of the document. Calling focusEditable instead will restore the
+        // correct editable selection and prevent scrolling when not needed.
+        this.editableOriginalFocus = this.editable.focus;
+        this.editable.focus = () => this.focusEditable();
+    }
+
+    destroy() {
+        if (this.editableOriginalFocus) {
+            this.editable.focus = this.editableOriginalFocus;
+        }
+        super.destroy();
     }
 
     selectAll() {
@@ -365,25 +380,30 @@ export class SelectionPlugin extends Plugin {
             if (anchorNode === focusNode && focusOffset < anchorOffset) {
                 direction = !direction;
             }
+
+            // Last resort: if the document selection doesn't even have the right
+            // anchorNode comparing to the range, we don't set the active selection.
+            const isSelectionUncorrectable = direction
+                ? anchorNode !== range.startContainer
+                : anchorNode !== range.endContainer;
+
             if (
                 this.activeSelection &&
-                (isProtecting(anchorNode) ||
+                (isSelectionUncorrectable ||
+                    isProtecting(anchorNode) ||
                     (isProtected(anchorNode) && !isUnprotecting(anchorNode)))
             ) {
                 // Keep the previous activeSelection in case of user interactions
                 // inside a protected zone.
                 return this.activeSelection;
             }
-            [anchorNode, anchorOffset] = normalizeCursorPosition(
-                anchorNode,
-                anchorOffset,
-                direction ? "left" : "right"
-            );
-            [focusNode, focusOffset] = normalizeCursorPosition(
-                focusNode,
-                focusOffset,
-                direction ? "right" : "left"
-            );
+
+            // For Safari, in edge cases in collaboration, the selection can be
+            // wrong (e.g. offsets are out of range) while the range is correct.
+            // We use range's offsets instead of selection's.
+            anchorOffset = direction ? range.startOffset : range.endOffset;
+            focusOffset = direction ? range.endOffset : range.startOffset;
+
             const [startContainer, startOffset, endContainer, endOffset] =
                 direction === DIRECTIONS.RIGHT
                     ? [anchorNode, anchorOffset, focusNode, focusOffset]
@@ -962,7 +982,7 @@ export class SelectionPlugin extends Plugin {
             isProtecting(node) || (isProtected(node) && !isUnprotecting(node));
         if (
             focusTarget !== anchorTarget &&
-            focusTarget.previousSibling === anchorTarget &&
+            focusTarget?.previousSibling === anchorTarget &&
             protectionCheck(anchorTarget)
         ) {
             return;
@@ -1085,14 +1105,23 @@ export class SelectionPlugin extends Plugin {
     }
 
     focusEditable() {
-        const { editableSelection, documentSelectionIsInEditable } = this.getSelectionData();
+        const selection = this.document.getSelection();
+        const documentSelectionIsInEditable = selection && this.isSelectionInEditable(selection);
         if (this.editable.contains(this.document.activeElement) && documentSelectionIsInEditable) {
-            // Editor has focus — nothing to do.
+            // Editor has focus — nothing to do. Unless the current active
+            // element is a textarea, in which case we want to focus the
+            // editable to update the selection to the editable.
+            if (this.document.activeElement.tagName === "TEXTAREA") {
+                this.editableOriginalFocus.call(this.editable);
+            }
             return;
         }
 
+        const { editableSelection } = this.getSelectionData();
+
         // Manualy focusing the editable is necessary to avoid some non-deterministic error in the HOOT unit tests.
-        this.editable.focus({ preventScroll: true });
+        // Use the copy of the original focus but prevent scrolling.
+        this.editableOriginalFocus.call(this.editable, { preventScroll: true });
 
         if (!documentSelectionIsInEditable) {
             // Selection is outside the editor — restore it.

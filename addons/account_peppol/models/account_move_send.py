@@ -18,7 +18,8 @@ class AccountMoveSend(models.AbstractModel):
     def _get_default_sending_method(self, move) -> str:
         # EXTENDS 'account'
         preferred_method = move.commercial_partner_id.with_company(move.company_id).invoice_sending_method
-        if not preferred_method and self._is_applicable_to_move('peppol', move):
+        company_registered_on_peppol = move.company_id.account_peppol_proxy_state not in ('not_registered', 'in_verification')
+        if company_registered_on_peppol and not preferred_method and self._is_applicable_to_move('peppol', move):
             return 'peppol'
         return super()._get_default_sending_method(move)
 
@@ -200,6 +201,11 @@ class AccountMoveSend(models.AbstractModel):
                     )
                     continue
 
+                if invoice.invoice_pdf_report_id and self._needs_ubl_postprocessing(invoice_data):
+                    self._postprocess_invoice_ubl_xml(invoice, invoice_data)
+                    xml_file = invoice_data['ubl_cii_xml_attachment_values']['raw']
+                    filename = invoice_data['ubl_cii_xml_attachment_values']['name']
+
                 if len(xml_file) > 64000000:
                     invoice_data['error'] = _("Invoice %s is too big to send via peppol (64MB limit)", invoice.name)
                     continue
@@ -263,13 +269,14 @@ class AccountMoveSend(models.AbstractModel):
                         for attachment in attachments_linked
                     ] + base_attachments
 
-                    new_message = invoice.with_context(no_new_invoice=True).message_post(
+                    new_message = invoice.with_context(no_new_invoice=True, no_document=True).message_post(
                         body=attachments_linked_message,
                         attachments=attachments_embedded
                     )
 
                     if new_message.attachment_ids.ids:
                         self.env.cr.execute("UPDATE ir_attachment SET res_id = NULL WHERE id IN %s", [tuple(new_message.attachment_ids.ids)])
+                        new_message.attachment_ids.invalidate_recordset(['res_id', 'res_model'], flush=False)
                         new_message.attachment_ids.write({
                             'res_model': new_message._name,
                             'res_id': new_message.id,

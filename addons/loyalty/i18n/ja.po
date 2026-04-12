@@ -12,8 +12,8 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2025-12-29 18:37+0000\n"
-"PO-Revision-Date: 2026-01-24 09:04+0000\n"
+"POT-Creation-Date: 2026-04-10 18:38+0000\n"
+"PO-Revision-Date: 2026-02-07 10:34+0000\n"
 "Last-Translator: \"Junko Augias (juau)\" <juau@odoo.com>\n"
 "Language-Team: Japanese <https://translate.odoo.com/projects/odoo-18/loyalty/"
 "ja/>\n"
@@ -67,11 +67,6 @@ msgstr ""
 #: code:addons/loyalty/models/loyalty_reward.py:0
 msgid " (Max %s)"
 msgstr " (最大 %s)"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "$100"
-msgstr "$100"
 
 #. module: loyalty
 #. odoo-python
@@ -130,25 +125,10 @@ msgid "10% on your order"
 msgstr "注文の10%"
 
 #. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
-msgid "1000"
-msgstr "1000"
-
-#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 msgid "2+1 Free"
 msgstr "2+1 無料"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_report
-msgid "2023-08-20"
-msgstr "2023-08-20"
-
-#. module: loyalty
-#: model_terms:ir.ui.view,arch_db:loyalty.gift_card_report
-msgid "2023-12-31"
-msgstr "2023-12-31"
 
 #. module: loyalty
 #: model:mail.template,body_html:loyalty.mail_template_gift_card
@@ -515,13 +495,13 @@ msgstr "要アクション"
 #: model:ir.model.fields,field_description:loyalty.field_loyalty_rule__active
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_card_view_search
 msgid "Active"
-msgstr "アクティブ"
+msgstr "有効"
 
 #. module: loyalty
 #: model:ir.model.fields,field_description:loyalty.field_res_partner__loyalty_card_count
 #: model:ir.model.fields,field_description:loyalty.field_res_users__loyalty_card_count
 msgid "Active loyalty cards"
-msgstr "アクティブなロイヤリティカード"
+msgstr "有効なロイヤリティカード"
 
 #. module: loyalty
 #. odoo-javascript
@@ -1888,7 +1868,8 @@ msgstr "シーケンス"
 msgid ""
 "Set up conditional rules on the order that will give access to rewards for "
 "customers"
-msgstr "オーダに条件ルールを設定することで、顧客に報奨を提供することができます。"
+msgstr ""
+"オーダに条件ルールを設定することで、顧客に報奨を提供することができます。"
 
 #. module: loyalty
 #: model_terms:ir.ui.view,arch_db:loyalty.loyalty_program_view_form
@@ -2026,8 +2007,8 @@ msgid ""
 "This product may not be archived. It is being used for an active promotion "
 "program."
 msgstr ""
-"このプロダクトはアーカイブされない場合があります。アクティブなプロモーション"
-"プログラムに使用されています。"
+"このプロダクトはアーカイブされない場合があります。有効なプロモーションプログ"
+"ラムに使用されています。"
 
 #. module: loyalty
 #: model:ir.model.fields,help:loyalty.field_loyalty_program__pricelist_ids
@@ -2184,7 +2165,7 @@ msgstr "カードの残高を変更しようとしています"
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_program.py:0
 msgid "You can not delete a program in an active state"
-msgstr "アクティブなステータスのプログラムを削除することはできません。"
+msgstr "有効なステータスのプログラムを削除することはできません。"
 
 #. module: loyalty
 #. odoo-python
@@ -2362,10 +2343,27 @@ msgid "used)"
 msgstr "使用済)"
 
 #. module: loyalty
+#: model_terms:ir.ui.view,arch_db:loyalty.loyalty_reward_view_kanban
+msgid "x"
+msgstr ""
+
+#. module: loyalty
 #. odoo-python
 #: code:addons/loyalty/models/loyalty_reward.py:0
 msgid "your order"
 msgstr "自分のオーダ"
+
+#~ msgid "$100"
+#~ msgstr "$100"
+
+#~ msgid "1000"
+#~ msgstr "1000"
+
+#~ msgid "2023-08-20"
+#~ msgstr "2023-08-20"
+
+#~ msgid "2023-12-31"
+#~ msgstr "2023-12-31"
 
 #~ msgid ""
 #~ "<table border=\"0\" cellpadding=\"0\" cellspacing=\"0\" "

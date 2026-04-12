@@ -13,6 +13,7 @@ import math
 import re
 import os
 from textwrap import shorten
+from urllib.parse import urlencode
 
 from odoo import api, fields, models, _, Command, SUPERUSER_ID, modules, tools
 from odoo.tools.sql import column_exists, create_column
@@ -28,6 +29,7 @@ from odoo.tools import (
     float_repr,
     format_amount,
     format_date,
+    format_list,
     formatLang,
     frozendict,
     get_lang,
@@ -1030,9 +1032,9 @@ class AccountMove(models.Model):
     @api.depends('bank_partner_id')
     def _compute_partner_bank_id(self):
         for move in self:
-            # This will get the bank account from the partner in an order with the trusted first
+            # This will get the trusted bank accounts from the partner
             bank_ids = move.bank_partner_id.bank_ids.filtered(
-                lambda bank: not bank.company_id or bank.company_id == move.company_id
+                lambda bank: (not bank.company_id or bank.company_id == move.company_id)
             ).sorted(lambda bank: not bank.allow_out_payment)
             move.partner_bank_id = bank_ids[:1]
 
@@ -4403,6 +4405,7 @@ class AccountMove(models.Model):
                             invoices |= invoice
                             current_invoice = self.env['account.move']
                             add_file_data_results(file_data, invoice)
+                            self._post_process_link_to_purchase_order(invoice)
 
                 except RedirectWarning:
                     raise
@@ -4425,6 +4428,11 @@ class AccountMove(models.Model):
             close_file(file_data)
 
         return attachments_by_invoice
+
+    @api.model
+    def _post_process_link_to_purchase_order(self, invoice):
+        # To be implemented in modules needing to process the invoice after it was linked (or not) to a PO
+        pass
 
     # -------------------------------------------------------------------------
     # BUSINESS METHODS
@@ -5081,6 +5089,22 @@ class AccountMove(models.Model):
                     "The recipient bank account linked to this invoice is archived.\n"
                     "So you cannot confirm the invoice."
                 ))
+            if invoice.partner_bank_id and invoice.is_inbound() and not invoice.partner_bank_id.allow_out_payment:
+                if self.env.user.id == SUPERUSER_ID or self.env.user.has_group('base.group_public') or self.env.user.has_group('base.group_portal'):
+                    # Do not block in case of automated flows, simply remove the information
+                    invoice.partner_bank_id = False
+                elif invoice.partner_bank_id._user_can_trust():
+                    raise RedirectWarning(
+                        _(
+                            "The company bank account (%(account_number)s) linked to this invoice is not trusted. "
+                            "Go to the Bank Settings, double-check that it is yours or correct the number, and click on Send Money to trust it.",
+                            account_number=invoice.partner_bank_id.display_name,
+                        ),
+                        invoice.partner_bank_id._get_records_action(),
+                        _("Bank settings")
+                    )
+                else:
+                    raise UserError(_("The bank account of your company is not trusted. Please ask an admin or someone with approval rights to check it."))
             if float_compare(invoice.amount_total, 0.0, precision_rounding=invoice.currency_id.rounding) < 0:
                 validation_msgs.add(_(
                     "You cannot validate an invoice with a negative total amount. "
@@ -5130,6 +5154,14 @@ class AccountMove(models.Model):
             # If the field autocheck_on_post is set, we want the checked field on the move to be checked
             if move.journal_id.autocheck_on_post:
                 move.checked = move.journal_id.autocheck_on_post
+
+            move_company_and_parents = move.company_id.sudo().parent_ids
+            mismatched_accounts = move.line_ids.mapped('account_id').filtered(lambda account: not move_company_and_parents & account.sudo().company_ids)
+            if mismatched_accounts:
+                validation_msgs.add(self.env._(
+                    "The entry is using accounts (%(accounts_codes_names)s) from a different company.",
+                    accounts_codes_names=format_list(self.env, mismatched_accounts.mapped('display_name'))
+                ))
 
         if validation_msgs:
             msg = "\n".join([line for line in validation_msgs])
@@ -5239,7 +5271,7 @@ class AccountMove(models.Model):
 
     def _link_bill_origin_to_purchase_orders(self, timeout=10):
         for move in self.filtered(lambda m: m.move_type in self.get_purchase_types()):
-            references = [ref.strip() for ref in move.invoice_origin.split(',')] if move.invoice_origin else []
+            references = [ref.strip() for ref in move.invoice_origin.split(',') if ref.strip()] if move.invoice_origin else []
             move._find_and_set_purchase_orders(references, move.partner_id.id, move.amount_total, timeout=timeout)
         return self
 
@@ -5366,8 +5398,8 @@ class AccountMove(models.Model):
         }
 
     def action_switch_move_type(self):
-        if any(move.posted_before for move in self):
-            raise ValidationError(_("You cannot switch the type of a document which has been posted once."))
+        if any((move.posted_before and move.name) for move in self):
+            raise ValidationError(_("You cannot switch the type of a document with an existing sequence number."))
         if any(move.move_type == "entry" for move in self):
             raise ValidationError(_("This action isn't available for this document."))
 
@@ -6443,17 +6475,17 @@ class AccountMove(models.Model):
             force_email_company=force_email_company, force_email_lang=force_email_lang
         )
         record = render_context['record']
-        subtitles = [f"{record.name} - {record.partner_id.name}" if record.partner_id.name else record.name]
+        subtitles = [f"{record.display_name} - {record.partner_id.name}" if record.partner_id.name else record.display_name]
         if self.is_invoice(include_receipts=True):
             # Only show the amount in emails for non-miscellaneous moves. It might confuse recipients otherwise.
             if self.invoice_date_due and self.payment_state not in ('in_payment', 'paid'):
                 subtitles.append(_(
                     '%(amount)s due\N{NO-BREAK SPACE}%(date)s',
-                    amount=format_amount(self.env, self.amount_total, self.currency_id, lang_code=render_context.get('lang')),
+                    amount=format_amount(self.env, self.amount_total or self.tax_totals.get('total_amount_currency', 0), self.currency_id, lang_code=render_context.get('lang')),
                     date=format_date(self.env, self.invoice_date_due, lang_code=render_context.get('lang')),
                 ))
             else:
-                subtitles.append(format_amount(self.env, self.amount_total, self.currency_id, lang_code=render_context.get('lang')))
+                subtitles.append(format_amount(self.env, self.amount_total or self.tax_totals.get('total_amount_currency', 0), self.currency_id, lang_code=render_context.get('lang')))
         render_context['subtitles'] = subtitles
         return render_context
 
@@ -6479,6 +6511,29 @@ class AccountMove(models.Model):
     # -------------------------------------------------------------------------
     # HOOKS
     # -------------------------------------------------------------------------
+
+    def _get_moves_zip_export_docs(self):
+        docs = set()
+        for move in self.filtered(lambda m: m.state == 'posted' and m.is_sale_document()):
+            try:
+                legal_docs = move._get_invoice_legal_documents_all()
+                docs.update(legal_docs.ids)
+            except Exception:  # noqa: BLE001
+                pass  # no legal docs for this move
+
+        filename = _('documents')
+        return docs, filename
+
+    def action_export_zip(self):
+        attachment_ids, filename = self._get_moves_zip_export_docs()
+        if not attachment_ids:
+            raise UserError(_('Nothing to export.'))
+
+        return {
+            'type': 'ir.actions.act_url',
+            'url': f"/account/export_zip_documents?{urlencode({'ids': list(attachment_ids), 'filename': f'{filename}.zip'}, doseq=True)}",
+            'close': True,
+        }
 
     def _action_invoice_ready_to_be_sent(self):
         """ Hook allowing custom code when an invoice becomes ready to be sent by mail to the customer.
