@@ -8,12 +8,13 @@
 # Fernanda Alvarez, 2025
 # "Fernanda Alvarez (mfar)" <mfar@odoo.com>, 2025, 2026.
 # "Patricia Gutiérrez (pagc)" <pagc@odoo.com>, 2025, 2026.
+# Weblate <noreply-mt-weblate@weblate.org>, 2026.
 msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:37+0000\n"
-"PO-Revision-Date: 2026-04-11 09:07+0000\n"
+"POT-Creation-Date: 2026-04-17 18:36+0000\n"
+"PO-Revision-Date: 2026-05-16 09:07+0000\n"
 "Last-Translator: \"Fernanda Alvarez (mfar)\" <mfar@odoo.com>\n"
 "Language-Team: Spanish (Latin America) <https://translate.odoo.com/projects/"
 "odoo-18/mail/es_419/>\n"
@@ -23,7 +24,7 @@ msgstr ""
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=3; plural=(n == 1) ? 0 : ((n != 0 && n % 1000000 == "
 "0) ? 1 : 2);\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 5.17\n"
 
 #. module: mail
 #. odoo-python
@@ -2274,7 +2275,7 @@ msgstr "Limpiar búsqueda rápida"
 #. odoo-javascript
 #: code:addons/mail/static/src/core/common/thread.xml:0
 msgid "Click here to retry"
-msgstr "Haga clic aquí para volver a intentarlo"
+msgstr "Haz clic aquí para volver a intentarlo"
 
 #. module: mail
 #. odoo-javascript
@@ -3439,7 +3440,7 @@ msgstr "Descargar:"
 #. odoo-javascript
 #: code:addons/mail/static/src/core/common/mail_attachment_dropzone.xml:0
 msgid "Drop Files here"
-msgstr "Arrastre los archivos aquí"
+msgstr "Arrastra los archivos aquí"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_activity__date_deadline
@@ -6627,7 +6628,7 @@ msgstr "Nuevo hilo"
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_tracking_value__new_value_char
 msgid "New Value Char"
-msgstr "Nuevo caracter de valor"
+msgstr "Nuevo carácter de valor"
 
 #. module: mail
 #: model:ir.model.fields,field_description:mail.field_mail_tracking_value__new_value_datetime
@@ -6665,7 +6666,7 @@ msgstr "Aquí aparecen los mensajes nuevos."
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.view_mail_tracking_value_form
 msgid "New values"
-msgstr "Valores nuevos"
+msgstr "Nuevos valores"
 
 #. module: mail
 #: model_terms:ir.ui.view,arch_db:mail.mail_activity_view_tree
@@ -8899,7 +8900,7 @@ msgstr "Búsqueda en progreso"
 #: code:addons/mail/static/src/core/web/mention_list.xml:0
 #: code:addons/mail/static/src/discuss/gif_picker/common/gif_picker.xml:0
 msgid "Search..."
-msgstr "Buscar…"
+msgstr "Buscar..."
 
 #. module: mail
 #. odoo-javascript
@@ -10695,6 +10696,12 @@ msgid "Unmute Conversation"
 msgstr "Dejar de silenciar conversación"
 
 #. module: mail
+#. odoo-javascript
+#: code:addons/mail/static/src/core/common/message.js:0
+msgid "Unnamed"
+msgstr "Sin nombre"
+
+#. module: mail
 #. odoo-python
 #: code:addons/mail/models/mail_tracking_value.py:0
 msgid "Unnamed %(record_model_name)s (%(record_id)s)"
@@ -10704,7 +10711,7 @@ msgstr "Sin nombre %(record_model_name)s (%(record_id)s)"
 #. odoo-python
 #: code:addons/mail/models/mail_render_mixin.py:0
 msgid "Unnamed Mail Template"
-msgstr "Correo sin nombre"
+msgstr "Plantilla de correo sin nombre"
 
 #. module: mail
 #. odoo-python
@@ -12339,7 +12346,7 @@ msgstr "“%(member_name)s” en “%(channel_name)s”"
 #. odoo-javascript
 #: code:addons/mail/static/src/core/web/activity.js:0
 msgid "“%s”"
-msgstr ""
+msgstr "\"%s\""
 
 #~ msgid ""
 #~ "Failed to render QWeb template: %(template_src)s\n"

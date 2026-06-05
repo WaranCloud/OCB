@@ -16,17 +16,17 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Odoo Server 18.0\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2026-04-10 18:37+0000\n"
-"PO-Revision-Date: 2026-03-29 12:15+0000\n"
+"POT-Creation-Date: 2026-04-24 17:38+0000\n"
+"PO-Revision-Date: 2026-05-27 15:24+0000\n"
 "Last-Translator: Bren Driesen <brdri@odoo.com>\n"
-"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/website/nl/"
-">\n"
+"Language-Team: Dutch <https://translate.odoo.com/projects/odoo-18/website/"
+"nl/>\n"
 "Language: nl\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: \n"
 "Plural-Forms: nplurals=2; plural=n != 1;\n"
-"X-Generator: Weblate 5.16.2\n"
+"X-Generator: Weblate 5.17\n"
 
 #. module: website
 #. odoo-javascript
@@ -2064,8 +2064,8 @@ msgstr "<u>Dinsdag</u><br/>8.00-18.00 uur"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_opening_hours
-msgid "<u>Wednesday</u><br/>8.00am-12.00am"
-msgstr "<u>Woensdag</u><br/>8.00-12.00 uur"
+msgid "<u>Wednesday</u><br/>8.00am-12.00pm"
+msgstr "<u>Woensdag</u><br/>8:00-12:00 uur"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_opening_hours
@@ -2075,10 +2075,8 @@ msgstr "<u>info@yourcompany.example.com</u>"
 #. module: website
 #. odoo-javascript
 #: code:addons/website/static/src/components/website_loader/website_loader.xml:0
-#, fuzzy
-#| msgid "AI"
 msgid "A"
-msgstr "AI"
+msgstr "A"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.res_config_settings_view_form
@@ -3287,7 +3285,7 @@ msgstr "Beschikbaar op de website"
 #. odoo-javascript
 #: code:addons/website/static/src/components/website_loader/website_loader.xml:0
 msgid "B"
-msgstr ""
+msgstr "B"
 
 #. module: website
 #. odoo-javascript
@@ -3725,7 +3723,7 @@ msgstr "De domeinen van de volgende services zijn standaard al geblokkeerd:"
 #: code:addons/website/static/src/components/dialog/seo.xml:0
 #: code:addons/website/static/src/components/website_loader/website_loader.xml:0
 msgid "C"
-msgstr ""
+msgstr "C"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_res_config_settings__cdn_url
@@ -4487,7 +4485,7 @@ msgstr "Configuratie"
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website__configurator_done
 msgid "Configurator Done"
-msgstr "Configurator gereed"
+msgstr "Configurator voltooid"
 
 #. module: website
 #. odoo-javascript
@@ -5078,10 +5076,8 @@ msgstr "Personaliseer tonen"
 #. odoo-javascript
 #: code:addons/website/static/src/components/dialog/seo.xml:0
 #: model_terms:ir.ui.view,arch_db:website.s_countdown_options
-#, fuzzy
-#| msgid "ID"
 msgid "D"
-msgstr "ID"
+msgstr "D"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_countdown_options
@@ -5276,7 +5272,7 @@ msgstr "Standaard schakeloptie-invoer"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_popup_options
 msgid "Delay"
-msgstr "Werkuren"
+msgstr "Wachttijd"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_features_grid
@@ -7789,7 +7785,7 @@ msgid ""
 "Hint: How to use Google Map on your website (Contact Us page and as a "
 "snippet)"
 msgstr ""
-"Hint: hoe je Google Maps op je website gebruikt (contactpagina en als "
+"Tip: Zo gebruik je Google Maps op je website (Op contactpagina en als "
 "snippet)"
 
 #. module: website
@@ -13354,6 +13350,12 @@ msgid "Sourdough Bread"
 msgstr "Zuurdesembrood"
 
 #. module: website
+#. odoo-javascript
+#: code:addons/website/static/src/components/dialog/edit_menu.xml:0
+msgid "Spaces are not allowed in URL."
+msgstr "Spaties zijn niet toegestaan in URL's."
+
+#. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Spacing"
 msgstr "Afstand"
@@ -13699,7 +13701,7 @@ msgstr "Systeemlettertypen"
 #. odoo-javascript
 #: code:addons/website/static/src/components/dialog/seo.xml:0
 msgid "T"
-msgstr ""
+msgstr "T"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_mega_menu_menus_logos
@@ -16439,7 +16441,7 @@ msgstr ""
 #: model_terms:ir.ui.view,arch_db:website.template_footer_headline
 #: model_terms:ir.ui.view,arch_db:website.template_footer_links
 msgid "X"
-msgstr ""
+msgstr "X"
 
 #. module: website
 #: model:ir.model.fields,field_description:website.field_website__social_twitter
@@ -16449,7 +16451,7 @@ msgstr "X Account"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.snippet_options
 msgid "Y"
-msgstr ""
+msgstr "Y"
 
 #. module: website
 #. odoo-javascript
@@ -17877,7 +17879,7 @@ msgstr "⌙ Actief"
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_popup_options
 msgid "⌙ Delay"
-msgstr "⌙ Vertraging"
+msgstr "⌙ Wachttijd"
 
 #. module: website
 #: model_terms:ir.ui.view,arch_db:website.s_rating_options
@@ -17903,6 +17905,9 @@ msgstr "pizza's"
 #: model_terms:ir.ui.view,arch_db:website.s_key_benefits
 msgid "✽  What We Offer"
 msgstr "wat wij bieden"
+
+#~ msgid "<u>Wednesday</u><br/>8.00am-12.00am"
+#~ msgstr "<u>Woensdag</u><br/>8.00-12.00 uur"
 
 #~ msgid "$1.50"
 #~ msgstr "$1.50"
